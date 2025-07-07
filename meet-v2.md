@@ -15,44 +15,6 @@ Let's architect this system from the ground up, using Mermaid diagrams to clearl
 
 This diagram shows the main components and how they are logically grouped into planes. The key takeaway is the addition of a **Media Processing Plane** which is distinct from the real-time Data Plane.
 
-```mermaid
-graph TD
-    subgraph User Layer
-        UserClient[User's Browser]
-    end
-
-    subgraph Control Plane
-        A[FastAPI Server]
-        GM[GStreamer Manager API]
-    end
-
-    subgraph Data Plane (Real-Time)
-        B[Mediasoup Node.js Server]
-    end
-
-    subgraph Media Processing Plane
-        C[GStreamer Worker Process]
-    end
-
-    subgraph Shared State
-        R[Redis Pub/Sub]
-    end
-
-    UserClient -- "1. Signaling (WSS)" --> A
-    A -- "2. Orchestration (RPC over WS)" --> B
-    A -- "5. Control (REST/RPC)" --> GM
-    A -- "State Sync" --- R
-
-    B -- "3. Media (WebRTC/SRTP)" <==> UserClient
-    B -- "4. Media (Plain RTP)" --> C
-
-    GM -- "6. Manages Lifecycle" --> C
-
-    style B fill:#d4fcd7,stroke:#333,stroke-width:2px
-    style C fill:#fcf3d4,stroke:#333,stroke-width:2px
-    style A fill:#d4e4fc,stroke:#333,stroke-width:2px
-```
-
 **Flow Description:**
 
 1.  **Signaling:** The user connects to the **FastAPI** server via a WebSocket for signaling and room control.
